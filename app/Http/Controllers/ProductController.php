@@ -14,6 +14,8 @@ class ProductController extends Controller
     {
         // retorna todos os produtos
         return Product::all();
+
+
     }
 
     /**
@@ -21,7 +23,8 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return Product::create($request->all());
+
     }
 
     /**
@@ -29,15 +32,16 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return Product::findOrfail($id);
     }
-
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
+    public function update(Request $request, string $id){
         //
+        $product = Product::findOrfail($id);
+        $product->update($request->all());
+        return $product;
     }
 
     /**
@@ -46,5 +50,7 @@ class ProductController extends Controller
     public function destroy(string $id)
     {
         //
+        Product::findOrFail($id)->delete();
+        return response(null, 204);
     }
 }
