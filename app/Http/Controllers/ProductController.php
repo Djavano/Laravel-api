@@ -23,7 +23,13 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        return Product::create($request->all());
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'description' => 'required|string',
+        ]);
+        $product = Product::create($validatedData);
+        return response()->json($product, 201);
 
     }
 
@@ -39,9 +45,15 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id){
         //
+        $validatedData = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'price' => 'sometimes|required|numeric|min:0',
+            'description' => 'sometimes|required|string'
+        ]);
+
         $product = Product::findOrfail($id);
-        $product->update($request->all());
-        return $product;
+        $product->update($validatedData);
+        return response()->json($product, 200);
     }
 
     /**
