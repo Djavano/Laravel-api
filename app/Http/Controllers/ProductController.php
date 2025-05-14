@@ -108,8 +108,56 @@ class ProductController extends Controller
 
 
     
-     //Update the specified resource in storage.
-    
+     
+ /**
+ * @OA\Put(
+ *     path="/api/products/{id}",
+ *     summary="Atualiza um produto existente",
+ *     description="Atualiza as informações de um produto específico",
+ *     tags={"Produtos"},
+ *     security={{"bearerAuth": {}}},
+ *     
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID do produto a ser atualizado",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     
+ *     @OA\RequestBody(
+ *         required=true,
+ *         description="Dados do produto para atualização",
+ *         @OA\JsonContent(
+ *             required={"name","price","description"},
+ *             @OA\Property(property="name", type="string", example="Nome Atualizado"),
+ *             @OA\Property(property="price", type="number", format="float", example=99.99),
+ *             @OA\Property(property="description", type="string", example="Descrição atualizada")
+ *         )
+ *     ),
+ *     
+ *     @OA\Response(
+ *         response=200,
+ *         description="Produto atualizado com sucesso",
+ *         @OA\JsonContent(ref="#/components/schemas/Product")
+ *     ),
+ *     
+ *     @OA\Response(
+ *         response=400,
+ *         description="Requisição inválida"
+ *     ),
+ *     
+ *     @OA\Response(
+ *         response=404,
+ *         description="Produto não encontrado"
+ *     ),
+ *     
+ *     @OA\Response(
+ *         response=422,
+ *         description="Erro de validação dos dados"
+ *     )
+ * )
+ */   
     public function update(Request $request, string $id){
         //
         $validatedData = $request->validate([
@@ -124,8 +172,39 @@ class ProductController extends Controller
     }
 
     
-   //Remove the specified resource from storage.
    
+  /**
+ * @OA\Delete(
+ *     path="/api/products/{id}",
+ *     summary="Remove um produto",
+ *     description="Exclui permanentemente um produto específico",
+ *     tags={"Produtos"},
+ *     security={{"bearerAuth": {}}},
+ *     
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID do produto a ser removido",
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     
+ *     @OA\Response(
+ *         response=204,
+ *         description="Produto removido com sucesso (sem conteúdo retornado)"
+ *     ),
+ *     
+ *     @OA\Response(
+ *         response=401,
+ *         description="Não autorizado"
+ *     ),
+ *     
+ *     @OA\Response(
+ *         response=404,
+ *         description="Produto não encontrado"
+ *     )
+ * )
+ */ 
     public function destroy(string $id)
     {
         //
