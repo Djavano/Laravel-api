@@ -109,12 +109,13 @@ class ProductController extends Controller
 
     
      
- /**
+/**
  * @OA\Put(
  *     path="/api/products/{id}",
  *     summary="Atualiza um produto existente",
- *     description="Atualiza as informações de um produto específico",
  *     tags={"Produtos"},
+ *     description="Atualiza parcial ou totalmente um produto. Pelo menos um dos campos (name, price ou description) deve ser fornecido.",
+ *     operationId="updateProduct",
  *     security={{"bearerAuth": {}}},
  *     
  *     @OA\Parameter(
@@ -122,17 +123,38 @@ class ProductController extends Controller
  *         in="path",
  *         required=true,
  *         description="ID do produto a ser atualizado",
- *         @OA\Schema(type="integer")
+ *         @OA\Schema(
+ *             type="integer",
+ *             format="int64",
+ *             example=1
+ *         )
  *     ),
  *     
  *     @OA\RequestBody(
  *         required=true,
- *         description="Dados do produto para atualização",
+ *         description="Dados do produto para atualização (pelo menos um campo obrigatório)",
  *         @OA\JsonContent(
- *             required={"name","price","description"},
- *             @OA\Property(property="name", type="string", example="Nome Atualizado"),
- *             @OA\Property(property="price", type="number", format="float", example=99.99),
- *             @OA\Property(property="description", type="string", example="Descrição atualizada")
+ *             @OA\Property(
+ *                 property="name",
+ *                 type="string",
+ *                 maxLength=255,
+ *                 example="Notebook Premium",
+ *                 description="Nome do produto"
+ *             ),
+ *             @OA\Property(
+ *                 property="price",
+ *                 type="number",
+ *                 format="float",
+ *                 minimum=0,
+ *                 example=4599.99,
+ *                 description="Preço do produto (deve ser maior ou igual a 0)"
+ *             ),
+ *             @OA\Property(
+ *                 property="description",
+ *                 type="string",
+ *                 example="Notebook com 16GB RAM e SSD 512GB",
+ *                 description="Descrição detalhada do produto"
+ *             )
  *         )
  *     ),
  *     
@@ -144,20 +166,60 @@ class ProductController extends Controller
  *     
  *     @OA\Response(
  *         response=400,
- *         description="Requisição inválida"
+ *         description="Requisição inválida",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Requisição inválida")
+ *         )
+ *     ),
+ *     
+ *     @OA\Response(
+ *         response=401,
+ *         description="Não autorizado",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Não autenticado")
+ *         )
  *     ),
  *     
  *     @OA\Response(
  *         response=404,
- *         description="Produto não encontrado"
+ *         description="Produto não encontrado",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Produto não encontrado")
+ *         )
  *     ),
  *     
  *     @OA\Response(
  *         response=422,
- *         description="Erro de validação dos dados"
+ *         description="Erro de validação",
+ *         @OA\JsonContent(
+ *             @OA\Property(
+ *                 property="message",
+ *                 type="string",
+ *                 example="Os dados fornecidos são inválidos."
+ *             ),
+ *             @OA\Property(
+ *                 property="errors",
+ *                 type="object",
+ *                 @OA\Property(
+ *                     property="name",
+ *                     type="array",
+ *                     @OA\Items(type="string", example="O campo nome é obrigatório quando nenhum dos outros campos está presente.")
+ *                 ),
+ *                 @OA\Property(
+ *                     property="price",
+ *                     type="array",
+ *                     @OA\Items(type="string", example="O campo preço deve ser um número.")
+ *                 ),
+ *                 @OA\Property(
+ *                     property="description",
+ *                     type="array",
+ *                     @OA\Items(type="string", example="O campo descrição deve ser uma string.")
+ *                 )
+ *             )
+ *         )
  *     )
  * )
- */   
+ */  
     public function update(UpdateProductRequest $request, string $id){
         //
         $product = Product::findOrfail($id);

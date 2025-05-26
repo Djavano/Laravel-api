@@ -22,9 +22,9 @@ class UpdateProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'sometimes|string|max:255',
-            'price' => 'sometimes|numeric|min:0',
-            'description' => 'sometimes|string',
+            'name' => 'required_without_all:price,description|string|max:255',
+            'price' => 'required_without_all:name,description|numeric|min:0',
+            'description' => 'required_without_all:name,price|string',
         ];
     }
 }
