@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\ProductResource;
 use Illuminate\Http\Request;
 use App\Models\Product;
 
@@ -39,7 +42,7 @@ class ProductController extends Controller
     public function index()
     {
         // retorna todos os produtos
-        return Product::all();
+        return ProductResource::collection(Product::all());
     }
     /**
  * @OA\Get(
@@ -66,7 +69,8 @@ class ProductController extends Controller
  */  
     public function show(string $id){
         $product = Product::findOrfail($id);
-        return response()->json($product,200);
+
+        return new ProductResource($product);
     }
 
     
@@ -96,14 +100,10 @@ class ProductController extends Controller
  * )
  */
 
-    public function store(Request $request){
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'description' => 'required|string',
-        ]);
-        $product = Product::create($validatedData);
-        return response()->json($product, 201);
+    public function store(StoreProductRequest $request){
+        $validData = $request->validated();
+        $product = Product::create($validData);
+        return (new ProductResource($product))->response()->setStatusCode(201);
     }
 
 
@@ -158,17 +158,13 @@ class ProductController extends Controller
  *     )
  * )
  */   
-    public function update(Request $request, string $id){
+    public function update(UpdateProductRequest $request, string $id){
         //
-        $validatedData = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'price' => 'sometimes|required|numeric|min:0',
-            'description' => 'sometimes|required|string'
-        ]);
-
         $product = Product::findOrfail($id);
+        $validatedData = $request->validated();
         $product->update($validatedData);
-        return response()->json($product, 200);
+
+        return new ProductResource($product);
     }
 
     
@@ -209,6 +205,6 @@ class ProductController extends Controller
     {
         //
         Product::findOrFail($id)->delete();
-        return response(null, 204);
+        return response()->json(null, 204);
     }
 }

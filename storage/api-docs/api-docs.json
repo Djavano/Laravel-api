@@ -243,14 +243,14 @@
                         "type": "string",
                         "example": "Notebook"
                     },
-                    "price": {
-                        "type": "number",
-                        "format": "float",
-                        "example": 2999.99
-                    },
                     "description": {
                         "type": "string",
                         "example": "Descrição do produto"
+                    },
+                    "price": {
+                        "type": "string",
+                        "format": "decimal",
+                        "example": 2999.99
                     },
                     "created_at": {
                         "type": "string",
